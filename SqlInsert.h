@@ -40,20 +40,26 @@ namespace Sql {
 struct ColumnValue
 {
     template <typename ColumnT>
-    ColumnValue(const ColumnT&, const typename ColumnT::type& value) :
-        columnName(ColumnT::sqlName()), value(QVariant::fromValue( value )), isDefault(false)
+    ColumnValue(const ColumnT &, const typename ColumnT::type &value)
+        : columnName(ColumnT::sqlName())
+        , value(QVariant::fromValue(value))
+        , isDefault(false)
     {
-        Sql::warning<boost::is_same<typename ColumnT::type, QDateTime>, UsageOfClientSideTime>::print();
+        Sql::warning<boost::is_same<typename ColumnT::type, QDateTime>,
+                     UsageOfClientSideTime>::print();
     }
 
-    template <typename ColumnT, class = typename boost::enable_if<typename ColumnT::is_column>::type>
-    ColumnValue(const ColumnT&) :
-        columnName(ColumnT::sqlName()), isDefault(true)
+    template <typename ColumnT,
+              class = typename boost::enable_if<typename ColumnT::is_column>::type>
+    ColumnValue(const ColumnT &)
+        : columnName(ColumnT::sqlName())
+        , isDefault(true)
     {
     }
 
-    ColumnValue(const QString& name) :
-        columnName(name), isDefault(true)
+    ColumnValue(const QString &name)
+        : columnName(name)
+        , isDefault(true)
     {
     }
 
@@ -62,12 +68,15 @@ struct ColumnValue
     bool isDefault;
 
     /// @internal needed for InsertExpr's vector
-    ColumnValue() : isDefault(true) {}
+    ColumnValue()
+        : isDefault(true)
+    {
+    }
 };
 
 // TODO find out if it would be possible to have an operator= instead
 template <typename ColumnT>
-ColumnValue operator<<(const ColumnT& col, const typename ColumnT::type& value)
+ColumnValue operator<<(const ColumnT &col, const typename ColumnT::type &value)
 {
     return ColumnValue(col, value);
 }
@@ -83,14 +92,16 @@ struct InsertExpr
     /**
      * Empty ctor.
      */
-    InsertExpr() : useDefaultValues(false) {}
+    InsertExpr()
+        : useDefaultValues(false)
+    {
+    }
 
     /**
      * "Copy" ctor.
      */
     template <typename OtherTableT>
-    explicit
-    InsertExpr( const InsertExpr<OtherTableT> &other )
+    explicit InsertExpr(const InsertExpr<OtherTableT> &other)
     {
         values = other.values;
     }
@@ -100,21 +111,21 @@ struct InsertExpr
      * @tparam T The table type to insert into
      */
     template <typename T>
-    InsertExpr<T> into( const T& )
+    InsertExpr<T> into(const T &)
     {
-        BOOST_MPL_ASSERT(( boost::is_same<TableT, detail::missing> )); // only one into allowed
+        BOOST_MPL_ASSERT((boost::is_same<TableT, detail::missing>)); // only one into allowed
         return InsertExpr<T>();
     }
 
     /**
      * Sets columns + values
      */
-    InsertExpr<TableT> columns( const QList<ColumnValue>& cols )
+    InsertExpr<TableT> columns(const QList<ColumnValue> &cols)
     {
         values += cols.toVector();
         return *this;
     }
-    InsertExpr<TableT> columns( const ColumnValue& col )
+    InsertExpr<TableT> columns(const ColumnValue &col)
     {
         return columns(QList<ColumnValue>() << col);
     }
@@ -134,12 +145,12 @@ struct InsertExpr
         SqlInsertQueryBuilder qb;
         qb.setTable<TableT>();
         if (values.isEmpty() || useDefaultValues) {
-            foreach (const ColumnValue& column, values) {
+            foreach (const ColumnValue &column, values) {
                 qb.addColumn(column.columnName);
             }
             qb.setToDefaultValues();
         } else {
-            foreach (const ColumnValue& col, values) {
+            foreach (const ColumnValue &col, values) {
                 if (col.isDefault) {
                     qb.addColumn(col.columnName);
                 } else {
@@ -153,20 +164,15 @@ struct InsertExpr
     /**
      * Returns a prepared QSqlQuery ready for execution.
      */
-    operator SqlQuery() const
-    {
-        return queryBuilder().query();
-    }
+    operator SqlQuery() const { return queryBuilder().query(); }
 
     /**
      * Returns the pre-filled dynamic query builder.
      * This is useful if intermediate queries have to be stored for extension etc.
-     * Since we don't have support for the auto keyword everywhere yet, that's currently our best option.
+     * Since we don't have support for the auto keyword everywhere yet, that's currently our best
+     * option.
      */
-    operator SqlInsertQueryBuilder() const
-    {
-        return queryBuilder();
-    }
+    operator SqlInsertQueryBuilder() const { return queryBuilder(); }
 
     QVector<ColumnValue> values;
     bool useDefaultValues;
@@ -180,40 +186,41 @@ InsertExpr<detail::missing> insert()
     return InsertExpr<detail::missing>();
 }
 
-QList<ColumnValue> operator&(const ColumnValue& c1, const ColumnValue& c2)
+QList<ColumnValue> operator&(const ColumnValue &c1, const ColumnValue &c2)
 {
     return QList<ColumnValue>() << c1 << c2;
 }
-QList<ColumnValue> operator&(const QList<ColumnValue>& c1, const ColumnValue& c2)
+QList<ColumnValue> operator&(const QList<ColumnValue> &c1, const ColumnValue &c2)
 {
     return QList<ColumnValue>() << c1 << c2;
 }
 
 template <typename ColumnT1, typename ColumnT2>
-typename boost::enable_if<boost::mpl::and_<typename ColumnT1::is_column, typename ColumnT2::is_column>, QList<ColumnValue> >::type
-operator&(const ColumnT1& c1, const ColumnT2& c2)
+typename boost::enable_if<
+    boost::mpl::and_<typename ColumnT1::is_column, typename ColumnT2::is_column>,
+    QList<ColumnValue>>::type
+operator&(const ColumnT1 &c1, const ColumnT2 &c2)
 {
     return operator&(ColumnValue(c1), ColumnValue(c2));
 }
 template <typename ColumnT>
-typename boost::enable_if<typename ColumnT::is_column, QList<ColumnValue> >::type
-operator&(const ColumnT& c1, const ColumnValue& c2)
+typename boost::enable_if<typename ColumnT::is_column, QList<ColumnValue>>::type
+operator&(const ColumnT &c1, const ColumnValue &c2)
 {
     return operator&(ColumnValue(c1), c2);
 }
 template <typename ColumnT>
-typename boost::enable_if<typename ColumnT::is_column, QList<ColumnValue> >::type
-operator&(const ColumnValue& c1, const ColumnT& c2)
+typename boost::enable_if<typename ColumnT::is_column, QList<ColumnValue>>::type
+operator&(const ColumnValue &c1, const ColumnT &c2)
 {
     return operator&(c1, ColumnValue(c2));
 }
 template <typename ColumnT>
-typename boost::enable_if<typename ColumnT::is_column, QList<ColumnValue> >::type
-operator&(const QList<ColumnValue>& c1, const ColumnT& c2)
+typename boost::enable_if<typename ColumnT::is_column, QList<ColumnValue>>::type
+operator&(const QList<ColumnValue> &c1, const ColumnT &c2)
 {
     return operator&(c1, ColumnValue(c2));
 }
-
-}
+} // namespace Sql
 
 #endif

@@ -8,7 +8,7 @@ include_directories(
 )
 
 if (NOT SQLATE_DATABASE_HOST)
-  set(SQLATE_DATABASE_HOST "sqlate-postgres")
+  set(SQLATE_DATABASE_HOST "127.0.0.1")
 endif()
 
 if (NOT SQLATE_DATABASE_USER)

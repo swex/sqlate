@@ -31,18 +31,18 @@ class SQLATE_EXPORT SqlDeleteQueryBuilder : public SqlConditionalQueryBuilderBas
 {
 public:
     /// Create a new query builder for the given database
-    explicit SqlDeleteQueryBuilder( const QSqlDatabase &db = QSqlDatabase::database() );
+    explicit SqlDeleteQueryBuilder(const QSqlDatabase &db = QSqlDatabase::database());
 
     /**
      * If @p includeSubTables is true all the tables inheriting from the specified
      * table are deleted. If false, only the table is deleted using
      * DELETE <b>ONLY</b> &lt;tableName&gt;
      */
-    void setIncludeSubTables( bool includeSubTables  );
+    void setIncludeSubTables(bool includeSubTables);
 
-    /// Returns the created query object, when called first, the query object is assembled and prepared
-    /// The method throws an SqlException if there is an error preparing the query.
-    SqlQuery& query();
+    /// Returns the created query object, when called first, the query object is assembled and
+    /// prepared The method throws an SqlException if there is an error preparing the query.
+    SqlQuery &query();
 
 private:
     friend class DeleteQueryBuilderTest;

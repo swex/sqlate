@@ -28,19 +28,21 @@
 
 #define SQLATE_DEFAULT_SERVER_PORT 5432
 
-#define SQLDEBUG  qDebug() << QString::fromLatin1("%1:%2").arg(QLatin1String( __FILE__ )).arg(__LINE__ ) << QLatin1String( ": " )
-
+#define SQLDEBUG                                                                                   \
+    qDebug() << QString::fromLatin1("%1:%2").arg(QLatin1String(__FILE__)).arg(__LINE__)            \
+             << QLatin1String(": ")
 
 namespace Sql {
- /** A memory-layout compatible version of QUuid that can be statically initialized. */
-struct StaticUuid {
-    uint   data1;
+/** A memory-layout compatible version of QUuid that can be statically initialized. */
+struct StaticUuid
+{
+    uint data1;
     ushort data2;
     ushort data3;
-    uchar  data4[8];
-    operator const QUuid &() const { return *reinterpret_cast<const QUuid*>(this); }
+    uchar data4[8];
+    operator const QUuid &() const { return *reinterpret_cast<const QUuid *>(this); }
 };
 
-BOOST_STATIC_ASSERT( sizeof(QUuid) == sizeof(StaticUuid) );
-}
+BOOST_STATIC_ASSERT(sizeof(QUuid) == sizeof(StaticUuid));
+} // namespace Sql
 #endif

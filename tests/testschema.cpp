@@ -2,7 +2,5 @@
 
 namespace Sql {
 
-DEFINE_SCHEMA( SCHEMA )
-
-
-}
+DEFINE_SCHEMA(SCHEMA)
+} // namespace Sql

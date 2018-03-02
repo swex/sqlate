@@ -33,14 +33,14 @@ public:
     ~KDThreadRunnerBase();
 
 protected:
-    explicit KDThreadRunnerBase( QObject* parent = 0 );
-    void doStart( Priority prio );
+    explicit KDThreadRunnerBase(QObject *parent = 0);
+    void doStart(Priority prio);
     void doExec();
 
-    void setImpl( QObject* );
-    QObject* impl() const;
+    void setImpl(QObject *);
+    QObject *impl() const;
 
-    QMutex* internalStartThreadMutex();
+    QMutex *internalStartThreadMutex();
 
 private:
     class Private;
@@ -50,21 +50,24 @@ private:
 template <class T>
 class SQLATE_EXPORT KDThreadRunner
 #ifdef DOXYGEN_RUN
- : public QThread
+    : public QThread
 #else
- : public KDThreadRunnerBase
+    : public KDThreadRunnerBase
 #endif
 {
 public:
-    explicit KDThreadRunner( QObject * p=0 )
-        : KDThreadRunnerBase( p ) {}
+    explicit KDThreadRunner(QObject *p = 0)
+        : KDThreadRunnerBase(p)
+    {
+    }
 
-    T * startThread( Priority prio = InheritPriority ) {
-        QMutexLocker locker( this->internalStartThreadMutex() );
-        if ( !this->impl() ) {
-            this->doStart( prio );
+    T *startThread(Priority prio = InheritPriority)
+    {
+        QMutexLocker locker(this->internalStartThreadMutex());
+        if (!this->impl()) {
+            this->doStart(prio);
         }
-        return static_cast<T*>( this->impl() );
+        return static_cast<T *>(this->impl());
     }
 
 protected:
@@ -72,9 +75,9 @@ protected:
     {
         // impl is created in the thread so that m_impl->thread()==this
         T t(this);
-        this->setImpl( &t );
+        this->setImpl(&t);
         this->doExec();
-        this->setImpl( 0 );
+        this->setImpl(0);
     }
 };
 

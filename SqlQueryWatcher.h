@@ -30,10 +30,11 @@ class QTimer;
 class QProcess;
 
 /** The actual watcher class, instantiated from a KDThreadRunner thread */
-class SQLATE_EXPORT SqlQueryWatcherHelper : public QObject {
-Q_OBJECT
+class SQLATE_EXPORT SqlQueryWatcherHelper : public QObject
+{
+    Q_OBJECT
 public:
-    SqlQueryWatcherHelper(QObject* runner);
+    SqlQueryWatcherHelper(QObject *runner);
     virtual ~SqlQueryWatcherHelper();
 
 public Q_SLOTS:
@@ -44,11 +45,11 @@ private Q_SLOTS:
     void dialogHidden();
 
 Q_SIGNALS:
-     void endWatcher();   
-    
+    void endWatcher();
+
 private:
     QTimer *m_timer;
     QProcess *m_process;
 };
 
-#endif 
+#endif

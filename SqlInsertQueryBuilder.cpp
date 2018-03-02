@@ -24,12 +24,12 @@
 #include "SqlExceptions.h"
 #include "Sql.h"
 
-SqlInsertQueryBuilder::SqlInsertQueryBuilder(const QSqlDatabase& db) :
-  SqlQueryBuilderBase( db )
+SqlInsertQueryBuilder::SqlInsertQueryBuilder(const QSqlDatabase &db)
+    : SqlQueryBuilderBase(db)
 {
 }
 
-void SqlInsertQueryBuilder::addColumnValue(const QString& columnName, const QVariant& value)
+void SqlInsertQueryBuilder::addColumnValue(const QString &columnName, const QVariant &value)
 {
     m_columnNames.push_back(columnName);
     m_values.insert(columnName, value);
@@ -45,44 +45,43 @@ void SqlInsertQueryBuilder::setToDefaultValues()
     m_values.clear();
 }
 
-
-SqlQuery& SqlInsertQueryBuilder::query()
+SqlQuery &SqlInsertQueryBuilder::query()
 {
-    if ( !m_assembled ) {
+    if (!m_assembled) {
 
-        m_queryString = QLatin1String( "INSERT INTO " );
+        m_queryString = QLatin1String("INSERT INTO ");
         m_queryString += m_table;
 
 #ifndef QUERYBUILDER_UNITTEST
         bool bindValues = false;
 #endif
 
-        if ( m_columnNames.isEmpty() ) { // no columns = all default
+        if (m_columnNames.isEmpty()) { // no columns = all default
             m_queryString += QLatin1String(" DEFAULT VALUES");
         } else {
-            if ( !m_columnNames.isEmpty() ) { //columns specified
-                m_queryString += QLatin1String( " (" );
-                Q_FOREACH( const QString& column, m_columnNames ) {
-                    m_queryString += column + QLatin1String( "," );
+            if (!m_columnNames.isEmpty()) { // columns specified
+                m_queryString += QLatin1String(" (");
+                Q_FOREACH (const QString &column, m_columnNames) {
+                    m_queryString += column + QLatin1String(",");
                 }
-                m_queryString[ m_queryString.length() -1 ] = QLatin1Char(')');
+                m_queryString[m_queryString.length() - 1] = QLatin1Char(')');
             }
-            m_queryString += QLatin1String( " VALUES (" );
+            m_queryString += QLatin1String(" VALUES (");
             int index = 0;
-            foreach (const QString& column, m_columnNames) {
+            foreach (const QString &column, m_columnNames) {
                 if (m_values.contains(column)) {
                     const QVariant value = m_values[column];
                     if (value.userType() == qMetaTypeId<SqlNowType>()) {
                         m_queryString += currentDateTime() % QLatin1Char(',');
                     } else {
-                        m_queryString += QString::fromLatin1( ":%1," ).arg(index);
+                        m_queryString += QString::fromLatin1(":%1,").arg(index);
                     }
                 } else {
-                    m_queryString += QLatin1String( "DEFAULT," );
+                    m_queryString += QLatin1String("DEFAULT,");
                 }
                 ++index;
             }
-            m_queryString[ m_queryString.length() -1 ] = QLatin1Char(')');
+            m_queryString[m_queryString.length() - 1] = QLatin1Char(')');
 #ifndef QUERYBUILDER_UNITTEST
             bindValues = true;
 #endif
@@ -91,16 +90,15 @@ SqlQuery& SqlInsertQueryBuilder::query()
         m_assembled = true;
 
 #ifndef QUERYBUILDER_UNITTEST
-        m_query = prepareQuery( m_queryString );
+        m_query = prepareQuery(m_queryString);
 
-        if ( bindValues ) {
-            for ( int i = 0; i < m_values.size(); ++i ) {
-                const QVariant value = m_values.values().at( i );
-                bindValue( i, value );
+        if (bindValues) {
+            for (int i = 0; i < m_values.size(); ++i) {
+                const QVariant value = m_values.values().at(i);
+                bindValue(i, value);
             }
         }
 #endif
     }
     return m_query;
 }
-

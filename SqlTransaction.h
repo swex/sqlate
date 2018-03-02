@@ -37,7 +37,7 @@ public:
      * Starts a transaction on the given database.
      * @throws SqlException if starting the transaction failed
      */
-    explicit SqlTransaction( const QSqlDatabase &db = QSqlDatabase::database() );
+    explicit SqlTransaction(const QSqlDatabase &db = QSqlDatabase::database());
 
     /**
      * Rolls back a still ongoing transaction, unless commit() has been called explicitly.
@@ -66,7 +66,7 @@ public:
     static int transactionsCount();
 
 private:
-    Q_DISABLE_COPY( SqlTransaction )
+    Q_DISABLE_COPY(SqlTransaction)
     QSqlDatabase m_db;
     static QHash<QString, int> m_refCounts;
     bool m_disarmed;

@@ -12,37 +12,38 @@ using namespace Sql;
 
 namespace NewSql {
 
-TABLE( Version, NO_EXPORT ) {
+TABLE(Version, NO_EXPORT)
+{
     ADMIN_GROUP("sqladmins")
     USER_GROUP("sqlusers")
-    SQL_NAME( "tblVersion" );
-    COLUMN( version, int, NotNull );
+    SQL_NAME("tblVersion");
+    COLUMN(version, int, NotNull);
     typedef boost::mpl::vector<versionType> columns;
 };
 
-TABLE( Existing, NO_EXPORT ) {
+TABLE(Existing, NO_EXPORT)
+{
     ADMIN_GROUP("sqladmins")
     USER_GROUP("sqlusers")
-    SQL_NAME( "tblExisting" );
-    COLUMN( id, QUuid, PrimaryKey );
-    COLUMN( column1, QString, NotNull, 128 );  // <-- column changed constraint to NotNull
-    COLUMN( column2, int, Null );              // <-- new column
+    SQL_NAME("tblExisting");
+    COLUMN(id, QUuid, PrimaryKey);
+    COLUMN(column1, QString, NotNull, 128); // <-- column changed constraint to NotNull
+    COLUMN(column2, int, Null); // <-- new column
     typedef boost::mpl::vector<idType, column1Type, column2Type> columns;
 };
 
-TABLE( New, NO_EXPORT ) {
+TABLE(New, NO_EXPORT)
+{
     ADMIN_GROUP("sqladmins")
     USER_GROUP("sqlusers")
-    SQL_NAME( "tblNew" );
-    COLUMN( id, QUuid, PrimaryKey );
-    COLUMN( column1, QString, Null, 42 );
+    SQL_NAME("tblNew");
+    COLUMN(id, QUuid, PrimaryKey);
+    COLUMN(column1, QString, Null, 42);
     typedef boost::mpl::vector<idType, column1Type> columns;
 };
 
-
 #define NEWSCHEMA (Version)(Existing)(New)
-DECLARE_SCHEMA( NewSchema, NEWSCHEMA );
-
-}
+DECLARE_SCHEMA(NewSchema, NEWSCHEMA);
+} // namespace NewSql
 
 #endif

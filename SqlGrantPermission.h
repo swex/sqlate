@@ -39,48 +39,55 @@ namespace Sql {
 
 namespace detail {
 
-/**
- * Permission statement creator.
- * @internal
- */
-struct permission_statement_creator {
-    permission_statement_creator( QStringList &stmts ) : m_stmts( stmts ) {}
-    template <typename T>
-    void operator()( wrap<T> ) {
-        QString stmt = QLatin1Literal("GRANT SELECT, INSERT, UPDATE, DELETE ON ") % T::tableName() % QLatin1Literal(" TO GROUP ") % T::adminGroup();
-        m_stmts.push_back( stmt );
-        QStringList allowedOperations;
-        allowedOperations << QLatin1String("SELECT");
-        if ( !T::is_restricted::value ) { 
-            if ( T::delete_rows::value) {
-                allowedOperations << QLatin1String("DELETE");
-            }
-            if ( T::update_rows::value) {
-                allowedOperations << QLatin1String("UPDATE");
-            }
-            if ( T::insert_rows::value) {
-                allowedOperations << QLatin1String("INSERT");
-            }
+    /**
+     * Permission statement creator.
+     * @internal
+     */
+    struct permission_statement_creator
+    {
+        permission_statement_creator(QStringList &stmts)
+            : m_stmts(stmts)
+        {
         }
-        stmt = QLatin1Literal("GRANT ") % allowedOperations.join(QLatin1String(", ")) %  QLatin1Literal(" ON ") % T::tableName() % QLatin1Literal(" TO GROUP ") % T::userGroup();
-        m_stmts.push_back( stmt );
-
-    }
-    QStringList &m_stmts;
-};
-
-}
+        template <typename T>
+        void operator()(wrap<T>)
+        {
+            QString stmt = QLatin1Literal("GRANT SELECT, INSERT, UPDATE, DELETE ON ")
+                % T::tableName() % QLatin1Literal(" TO GROUP ") % T::adminGroup();
+            m_stmts.push_back(stmt);
+            QStringList allowedOperations;
+            allowedOperations << QLatin1String("SELECT");
+            if (!T::is_restricted::value) {
+                if (T::delete_rows::value) {
+                    allowedOperations << QLatin1String("DELETE");
+                }
+                if (T::update_rows::value) {
+                    allowedOperations << QLatin1String("UPDATE");
+                }
+                if (T::insert_rows::value) {
+                    allowedOperations << QLatin1String("INSERT");
+                }
+            }
+            stmt = QLatin1Literal("GRANT ") % allowedOperations.join(QLatin1String(", "))
+                % QLatin1Literal(" ON ") % T::tableName() % QLatin1Literal(" TO GROUP ")
+                % T::userGroup();
+            m_stmts.push_back(stmt);
+        }
+        QStringList &m_stmts;
+    };
+} // namespace detail
 
 /**
  * Returns a list of GRANT ... ON ... TO ... statements for all mutable tables.
  * @tparam Schema A MPL sequence of tables.
  * @returns A list of SQL statements to give rights to the tables.
  */
-template<typename Schema>
+template <typename Schema>
 QStringList createPermissionStatements()
 {
     QStringList statements;
-    boost::mpl::for_each<Schema, detail::wrap<boost::mpl::placeholders::_1> >( detail::permission_statement_creator( statements ) );
+    boost::mpl::for_each<Schema, detail::wrap<boost::mpl::placeholders::_1>>(
+        detail::permission_statement_creator(statements));
     return statements;
 }
 
@@ -91,14 +98,13 @@ QStringList createPermissionStatements()
  * @throws SqlException in case of a database error
  */
 template <typename Schema>
-void grantPermissions( const QSqlDatabase &db )
+void grantPermissions(const QSqlDatabase &db)
 {
-    foreach ( const QString &stmt, Sql::createPermissionStatements<Schema>() ) {
-        SqlQuery q( db );
-        q.exec( stmt );
+    foreach (const QString &stmt, Sql::createPermissionStatements<Schema>()) {
+        SqlQuery q(db);
+        q.exec(stmt);
     }
 }
-
-}
+} // namespace Sql
 
 #endif

@@ -21,7 +21,4 @@
 #include "SqlSchema.h"
 
 namespace Sql {
-
-
-
-}
+} // namespace Sql

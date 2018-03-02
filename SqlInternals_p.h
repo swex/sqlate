@@ -34,17 +34,21 @@ namespace Sql {
 
 namespace detail {
 
-/**
- * type wrapper to avoid instantiation of concrete types
- * @tparam T The type to wrap
- * @internal
- */
-template <typename T> struct wrap {};
+    /**
+     * type wrapper to avoid instantiation of concrete types
+     * @tparam T The type to wrap
+     * @internal
+     */
+    template <typename T>
+    struct wrap
+    {
+    };
 
-/** Empty type for eg. not yet specified parts of a query. */
-struct missing {};
-
-}
+    /** Empty type for eg. not yet specified parts of a query. */
+    struct missing
+    {
+    };
+} // namespace detail
 
 /**
  * Metafunctions for concatenating two MPL vectors.
@@ -53,30 +57,29 @@ struct missing {};
  * @returns V1 + V2
  */
 template <typename V1, typename V2>
-struct append : boost::mpl::fold<
-    V2,
-    V1,
-    boost::mpl::push_back<boost::mpl::placeholders::_,boost::mpl::placeholders::_>
->
-{};
-
+struct append
+    : boost::mpl::fold<
+          V2, V1, boost::mpl::push_back<boost::mpl::placeholders::_, boost::mpl::placeholders::_>>
+{
+};
 
 namespace detail {
 
-/**
- * Implementation details for the conditional compiler warning generator template below.
- * @internal
- */
-template <bool B>
-struct warning_helper {
-    typedef unsigned int signed_or_unsigned_int;
-};
-template <>
-struct warning_helper<true> {
-    typedef signed int signed_or_unsigned_int;
-};
-
-}
+    /**
+     * Implementation details for the conditional compiler warning generator template below.
+     * @internal
+     */
+    template <bool B>
+    struct warning_helper
+    {
+        using signed_or_unsigned_int = unsigned int;
+    };
+    template <>
+    struct warning_helper<true>
+    {
+        using signed_or_unsigned_int = int;
+    };
+} // namespace detail
 
 /**
  * Triggers a conditional compiler warning.
@@ -85,16 +88,16 @@ struct warning_helper<true> {
  * @note requires sign comparison warnings being enabled.
  */
 template <typename Condition, typename Message>
-struct warning {
-    static inline void print() {
+struct warning
+{
+    static inline void print()
+    {
         const typename detail::warning_helper<Condition::value>::signed_or_unsigned_int a = 0;
         const unsigned int b = 0;
         const bool c = (a != b);
-        (void) c;
+        (void)c;
     }
 };
-
-
-}
+} // namespace Sql
 
 #endif

@@ -42,116 +42,122 @@
  * Database schema related internal classes and functions.
  */
 
-
 /** Stringification of SQL identifier names, used in table and column classes. */
-#define SQL_NAME( x ) \
-   static QString sqlName() { return QLatin1String(x); }
+#define SQL_NAME(x)                                                                                \
+    static QString sqlName() { return QLatin1String(x); }
 
-/** Define who can have admin rights for the table. Users belonging to the group specified here are treated as admin user.*/
-#define ADMIN_GROUP( x ) \
-   static QString adminGroup() { return QLatin1String(x); }
+/** Define who can have admin rights for the table. Users belonging to the group specified here are
+ * treated as admin user.*/
+#define ADMIN_GROUP(x)                                                                             \
+    static QString adminGroup() { return QLatin1String(x); }
 
 /** Define the group name for regular users valid for this table.*/
-#define USER_GROUP( x ) \
-   static QString userGroup() { return QLatin1String(x); }
+#define USER_GROUP(x)                                                                              \
+    static QString userGroup() { return QLatin1String(x); }
 
 /** Convenience macro to create column types.
  *  Use inside a table declaration.
  */
-#define COLUMN( name, type, ... ) \
-    struct name ## Type : Column< name ## Type, type , ## __VA_ARGS__ > { SQL_NAME( #name ) } name
+#define COLUMN(name, type, ...)                                                                    \
+    struct name##Type : Column<name##Type, type, ##__VA_ARGS__>{ SQL_NAME(#name) } name
 
 /** Convenience macro to create a column alias.
-  * Use inside a table definition to asign a different name to an existing column.
-  */
-#define COLUMN_ALIAS( column, alias ) \
-    typedef column ## Type alias ## Type; \
-    alias ## Type alias
-
-/** Convenience macro for creating foreign key columns with the default legacy fk_[table]_[col] name.
- *  Use inside a table declaration.
+ * Use inside a table definition to asign a different name to an existing column.
  */
-#define FOREIGN_KEY( name, fkTab, fkCol, ... ) \
-    struct name ## Type : ForeignKey< name ## Type, fkTab ## Type :: fkCol ## Type , ## __VA_ARGS__ > { \
-        static QString sqlName() { return QLatin1Literal( "fk_" ) % referenced_column::table::tableName() % QLatin1Char('_' ) % referenced_column::sqlName(); } \
+#define COLUMN_ALIAS(column, alias)                                                                \
+    typedef column##Type alias##Type;                                                              \
+    alias##Type alias
+
+/** Convenience macro for creating foreign key columns with the default legacy fk_[table]_[col]
+ * name. Use inside a table declaration.
+ */
+#define FOREIGN_KEY(name, fkTab, fkCol, ...)                                                       \
+    struct name##Type : ForeignKey<name##Type, fkTab##Type ::fkCol##Type, ##__VA_ARGS__>           \
+    {                                                                                              \
+        static QString sqlName()                                                                   \
+        {                                                                                          \
+            return QLatin1Literal("fk_") % referenced_column::table::tableName()                   \
+                % QLatin1Char('_') % referenced_column::sqlName();                                 \
+        }                                                                                          \
     } name
 
 /** Convenience macro for creating foreign key columns .
  *  Use inside a table declaration.
  */
-#define NAMED_FOREIGN_KEY( name, fkTab, fkCol, ... ) \
-    struct name ## Type : ForeignKey< name ## Type, fkTab ## Type :: fkCol ## Type , ## __VA_ARGS__ > { SQL_NAME( #name ) } name
+#define NAMED_FOREIGN_KEY(name, fkTab, fkCol, ...)                                                 \
+    struct name##Type                                                                              \
+        : ForeignKey<name##Type, fkTab##Type ::fkCol##Type, ##__VA_ARGS__>{ SQL_NAME(#name) } name
 
-/** Convenience macro to create a table with non-updatable rows type. Put after one of the TABLE macros.*/
-#define NO_USER_UPDATE \
-    typedef boost::mpl::false_ update_rows;
+/** Convenience macro to create a table with non-updatable rows type. Put after one of the TABLE
+ * macros.*/
+#define NO_USER_UPDATE typedef boost::mpl::false_ update_rows;
 
-/** Convenience macro to create a table with non-deletable rows type. Put after one of the TABLE macros.*/
-#define NO_USER_DELETE \
-    typedef boost::mpl::false_ delete_rows;
+/** Convenience macro to create a table with non-deletable rows type. Put after one of the TABLE
+ * macros.*/
+#define NO_USER_DELETE typedef boost::mpl::false_ delete_rows;
 
-/** Convenience macro to create a table with non-insertable rows type. Put after one of the TABLE macros.*/
-#define NO_USER_INSERT \
-    typedef boost::mpl::false_ insert_rows;
+/** Convenience macro to create a table with non-insertable rows type. Put after one of the TABLE
+ * macros.*/
+#define NO_USER_INSERT typedef boost::mpl::false_ insert_rows;
 
-/** Convenience macro to create a restricted table type: only SELECT is allowed. Put after one of the TABLE macros.
- * Same as using NO_USER_UPDATE, NO_USER_DELETE, NO_USER_INSERT together
+/** Convenience macro to create a restricted table type: only SELECT is allowed. Put after one of
+ * the TABLE macros. Same as using NO_USER_UPDATE, NO_USER_DELETE, NO_USER_INSERT together
  */
-#define ONLY_USER_SELECT \
-    typedef boost::mpl::true_ is_restricted;
+#define ONLY_USER_SELECT typedef boost::mpl::true_ is_restricted;
 
 /** Convenience macro to create a table type. */
-#define TABLE( name, _EXPORT ) \
-    struct name ## Type; \
-    extern _EXPORT name ## Type name; \
-    struct name ## Type : Table< name ## Type >
+#define TABLE(name, _EXPORT)                                                                       \
+    struct name##Type;                                                                             \
+    extern _EXPORT name##Type name;                                                                \
+    struct name##Type : Table<name##Type>
 
 /** Convenience macro to create a lookup table type. */
-#define LOOKUP_TABLE( name, _EXPORT ) \
-    struct name ## Type; \
-    extern _EXPORT name ## Type name; \
-    struct name ## Type : LookupTable< name ## Type >
+#define LOOKUP_TABLE(name, _EXPORT)                                                                \
+    struct name##Type;                                                                             \
+    extern _EXPORT name##Type name;                                                                \
+    struct name##Type : LookupTable<name##Type>
 
 /** Convenience macro to create a n:m helper table type. */
-#define RELATION( name, leftTab, leftCol, rightTab, rightCol,_EXPORT ) \
-    struct name ## Type; \
-    extern _EXPORT name ## Type name; \
-    struct name ## Type : Relation< name ## Type, leftTab ## Type :: leftCol ## Type, rightTab ## Type :: rightCol ## Type>
+#define RELATION(name, leftTab, leftCol, rightTab, rightCol, _EXPORT)                              \
+    struct name##Type;                                                                             \
+    extern _EXPORT name##Type name;                                                                \
+    struct name##Type                                                                              \
+        : Relation<name##Type, leftTab##Type ::leftCol##Type, rightTab##Type ::rightCol##Type>
 
 /** Convenience macro to create a n:m helper table type. */
-#define UNIQUE_RELATION( name, leftTab, leftCol, rightTab, rightCol,_EXPORT ) \
-    struct name ## Type; \
-    extern _EXPORT name ## Type name; \
-    struct name ## Type : UniqueRelation< name ## Type, leftTab ## Type :: leftCol ## Type, rightTab ## Type :: rightCol ## Type>
+#define UNIQUE_RELATION(name, leftTab, leftCol, rightTab, rightCol, _EXPORT)                       \
+    struct name##Type;                                                                             \
+    extern _EXPORT name##Type name;                                                                \
+    struct name##Type : UniqueRelation<name##Type, leftTab##Type ::leftCol##Type,                  \
+                                       rightTab##Type ::rightCol##Type>
 
 /** Convenience macro to create a recursive n:m helper table type. */
-#define RECURSIVE_RELATION( name, tab, col, _EXPORT ) \
-    struct name ## Type; \
-    extern _EXPORT name ## Type name; \
-    struct name ## Type : RecursiveRelation< name ## Type, tab ## Type :: col ## Type >
+#define RECURSIVE_RELATION(name, tab, col, _EXPORT)                                                \
+    struct name##Type;                                                                             \
+    extern _EXPORT name##Type name;                                                                \
+    struct name##Type : RecursiveRelation<name##Type, tab##Type ::col##Type>
 
 /** Convenience macro to create a recursive n:m helper table type. */
-#define UNIQUE_RECURSIVE_RELATION( name, tab, col, _EXPORT ) \
-    struct name ## Type; \
-    extern _EXPORT name ## Type name; \
-    struct name ## Type : UniqueRecursiveRelation< name ## Type, tab ## Type :: col ## Type >
+#define UNIQUE_RECURSIVE_RELATION(name, tab, col, _EXPORT)                                         \
+    struct name##Type;                                                                             \
+    extern _EXPORT name##Type name;                                                                \
+    struct name##Type : UniqueRecursiveRelation<name##Type, tab##Type ::col##Type>
 
 /** Convenience macro to create the schema declaration. */
-#define DECLARE_SCHEMA_MAKE_TYPE( r, unused, i, t ) BOOST_PP_COMMA_IF(i) BOOST_PP_CAT(t, Type)
-#define DECLARE_SCHEMA( name, seq ) typedef boost::mpl::vector<BOOST_PP_SEQ_FOR_EACH_I(DECLARE_SCHEMA_MAKE_TYPE, ~, seq)> name
+#define DECLARE_SCHEMA_MAKE_TYPE(r, unused, i, t) BOOST_PP_COMMA_IF(i) BOOST_PP_CAT(t, Type)
+#define DECLARE_SCHEMA(name, seq)                                                                  \
+    typedef boost::mpl::vector<BOOST_PP_SEQ_FOR_EACH_I(DECLARE_SCHEMA_MAKE_TYPE, ~, seq)> name
 
 /** Convenience macro to create the schema definition. */
-#define DEFINE_SCHEMA_MAKE_DEF( r, unused, t ) BOOST_PP_CAT(t, Type) t;
-#define DEFINE_SCHEMA( seq ) BOOST_PP_SEQ_FOR_EACH(DEFINE_SCHEMA_MAKE_DEF, ~, seq)
-
+#define DEFINE_SCHEMA_MAKE_DEF(r, unused, t) BOOST_PP_CAT(t, Type) t;
+#define DEFINE_SCHEMA(seq) BOOST_PP_SEQ_FOR_EACH(DEFINE_SCHEMA_MAKE_DEF, ~, seq)
 
 namespace Sql {
 
 /**
  * Properties of SQL columns.
  */
-enum ColumnProperties
-{
+enum ColumnProperties {
     Null = 0, ///< column can be NULL
     NotNull = 1, ///< column must not be NULL
     Unique = 2, ///< column content must be unique
@@ -159,35 +165,44 @@ enum ColumnProperties
     Default = 8, ///< Use default value
     OnDeleteCascade = 16, ///< For foreign key constraints, cascade on deletion.
     OnDeleteRestrict = 32, ///< for foreign key constraints, restrict deletion.
-    OnUserUpdateRestrict = 64, ///< Restrict update for regular users. For this to work there must be an is_administrator() stored procedure that checks if the current user is administrator or not.
-    Notify = 128 ///< When an UPDATE is made on a row, emit a signal containing the content of the column for this row, and an encoded string corresponding to the column name.
+    OnUserUpdateRestrict = 64, ///< Restrict update for regular users. For this to work there must
+                               ///< be an is_administrator() stored procedure that checks if the
+                               ///< current user is administrator or not.
+    Notify = 128 ///< When an UPDATE is made on a row, emit a signal containing the content of the
+                 ///< column for this row, and an encoded string corresponding to the column name.
 };
-
 
 /**Type trait to check if a class has a certain method*/
 
 #ifdef __GCC__
-#define HAS_MEMBER_METHOD(name, method) \
-template <typename T>                   \
-class name                              \
-{                                       \
-    struct Yes {char unused[1];};       \
-    struct No {char unused[2];};        \
-                                        \
-    template <typename C>               \
-    static Yes test(decltype(std::declval< const C>().method())*); \
-    template <typename C>               \
-    static No test(...);                \
-public:                                 \
-    static const bool value = (sizeof(test<T>(0)) == sizeof(Yes)); \
-};
+#define HAS_MEMBER_METHOD(name, method)                                                            \
+    template <typename T>                                                                          \
+    class name                                                                                     \
+    {                                                                                              \
+        struct Yes                                                                                 \
+        {                                                                                          \
+            char unused[1];                                                                        \
+        };                                                                                         \
+        struct No                                                                                  \
+        {                                                                                          \
+            char unused[2];                                                                        \
+        };                                                                                         \
+                                                                                                   \
+        template <typename C>                                                                      \
+        static Yes test(decltype(std::declval<const C>().method()) *);                             \
+        template <typename C>                                                                      \
+        static No test(...);                                                                       \
+                                                                                                   \
+    public:                                                                                        \
+        static const bool value = (sizeof(test<T>(0)) == sizeof(Yes));                             \
+    };
 #else
-#define HAS_MEMBER_METHOD(name, method) \
-    template <typename T>                   \
-    class name                              \
-    {                                       \
-    public:                                 \
-        static const bool value = true; \
+#define HAS_MEMBER_METHOD(name, method)                                                            \
+    template <typename T>                                                                          \
+    class name                                                                                     \
+    {                                                                                              \
+    public:                                                                                        \
+        static const bool value = true;                                                            \
     };
 #endif
 HAS_MEMBER_METHOD(hasAdminGroup, adminGroup);
@@ -200,23 +215,25 @@ HAS_MEMBER_METHOD(hasUserGroup, userGroup);
 template <typename ColList>
 struct UniqueConstraint
 {
-    typedef ColList columns;
+    using columns = ColList;
 };
-
 
 /**
  * Base class for SQL table types.
  * @tparam DerivedTable CRTP
  */
-template<typename DerivedTable>
+template <typename DerivedTable>
 struct Table
 {
-    typedef boost::mpl::false_ is_lookup_table;
-    typedef boost::mpl::false_ is_relation;
-    typedef boost::mpl::false_ is_restricted; //regular users can only select it
-    typedef boost::mpl::true_ delete_rows;    //regular users can delete rows from it. _is_restricted takes precendece
-    typedef boost::mpl::true_ update_rows;    //regular users can update rows from it. _is_restricted takes precendece
-    typedef boost::mpl::true_ insert_rows;    //regular users can insert rows from it. _is_restricted takes precendece
+    using is_lookup_table = boost::mpl::false_;
+    using is_relation = boost::mpl::false_;
+    using is_restricted = boost::mpl::false_; // regular users can only select it
+    using delete_rows =
+        boost::mpl::true_; // regular users can delete rows from it. _is_restricted takes precendece
+    using update_rows =
+        boost::mpl::true_; // regular users can update rows from it. _is_restricted takes precendece
+    using insert_rows =
+        boost::mpl::true_; // regular users can insert rows from it. _is_restricted takes precendece
 
     /**
      * Base class for SQL columns of table @p DerivedTable
@@ -229,25 +246,34 @@ struct Table
     struct Column
     {
         /** C++ type of this column. */
-        typedef ColumnType type;
+        using type = ColumnType;
         /** The table this column is in. */
-        typedef DerivedTable table;
+        using table = DerivedTable;
         /** The maximum size of this column, -1 means no restrictions. */
         static const int size = Size;
 
         /** For identification of column classes in WhereExpr operators. */
-        typedef boost::mpl::true_ is_column;
+        using is_column = boost::mpl::true_;
 
-        typedef boost::mpl::false_ hasForeignKey;
-        typedef typename boost::mpl::if_c<(P & NotNull) != 0, boost::mpl::true_, boost::mpl::false_>::type notNull;
-        typedef typename boost::mpl::if_c<(P & Unique) != 0, boost::mpl::true_, boost::mpl::false_>::type unique;
-        typedef typename boost::mpl::if_c<((P & PrimaryKey) == PrimaryKey), boost::mpl::true_, boost::mpl::false_>::type primaryKey;
-        typedef typename boost::mpl::if_c<(P & Default) != 0, boost::mpl::true_, boost::mpl::false_>::type useDefault;
-        typedef typename boost::mpl::if_c<(P & OnUserUpdateRestrict) != 0, boost::mpl::true_, boost::mpl::false_>::type onUserUpdateRestrict;
-        typedef typename boost::mpl::if_c<(P & Notify) != 0, boost::mpl::true_, boost::mpl::false_>::type notify;
+        using hasForeignKey = boost::mpl::false_;
+        typedef typename boost::mpl::if_c<(P & NotNull) != 0, boost::mpl::true_,
+                                          boost::mpl::false_>::type notNull;
+        typedef typename boost::mpl::if_c<(P & Unique) != 0, boost::mpl::true_,
+                                          boost::mpl::false_>::type unique;
+        typedef typename boost::mpl::if_c<((P & PrimaryKey) == PrimaryKey), boost::mpl::true_,
+                                          boost::mpl::false_>::type primaryKey;
+        typedef typename boost::mpl::if_c<(P & Default) != 0, boost::mpl::true_,
+                                          boost::mpl::false_>::type useDefault;
+        typedef typename boost::mpl::if_c<(P & OnUserUpdateRestrict) != 0, boost::mpl::true_,
+                                          boost::mpl::false_>::type onUserUpdateRestrict;
+        typedef typename boost::mpl::if_c<(P & Notify) != 0, boost::mpl::true_,
+                                          boost::mpl::false_>::type notify;
 
         /** Returns the fully qualified name of this column, ie. "tableName.columnName". */
-        static QString name() { return DerivedTable::sqlName() % QLatin1Char('.') % Derived::sqlName(); }
+        static QString name()
+        {
+            return DerivedTable::sqlName() % QLatin1Char('.') % Derived::sqlName();
+        }
     };
 
     /**
@@ -259,36 +285,42 @@ struct Table
     template <typename Derived, typename ForeignColumn, int P = Sql::NotNull>
     struct ForeignKey : Column<Derived, typename ForeignColumn::type, P>
     {
-        typedef ForeignColumn referenced_column;
-        typedef boost::mpl::true_ hasForeignKey;
+        using referenced_column = ForeignColumn;
+        using hasForeignKey = boost::mpl::true_;
 
-        typedef typename boost::mpl::if_c<(P & OnDeleteCascade) != 0, boost::mpl::true_, boost::mpl::false_>::type onDeleteCascade;
-        typedef typename boost::mpl::if_c<(P & OnDeleteRestrict) != 0, boost::mpl::true_, boost::mpl::false_>::type onDeleteRestrict;
+        typedef typename boost::mpl::if_c<(P & OnDeleteCascade) != 0, boost::mpl::true_,
+                                          boost::mpl::false_>::type onDeleteCascade;
+        typedef typename boost::mpl::if_c<(P & OnDeleteRestrict) != 0, boost::mpl::true_,
+                                          boost::mpl::false_>::type onDeleteRestrict;
     };
 
     /** Returns the SQL identifier of this table. */
     static QString tableName() { return DerivedTable::sqlName(); }
 
     /** Sequence of table constraints. */
-    typedef boost::mpl::vector<> constraints;
-    typedef constraints baseConstraints;
+    using constraints = boost::mpl::vector<>;
+    using baseConstraints = constraints;
 };
 
 /**
  * Base class for lookup tables
  * @tparam DerivedTable CRTP
  */
-template<typename DerivedTable>
+template <typename DerivedTable>
 struct LookupTable : Table<DerivedTable>
 {
-    typedef boost::mpl::true_ is_lookup_table;
-    typedef boost::mpl::true_ is_restricted;
-    typedef Table<DerivedTable> base_type; // needed for MSVC to compile the follow lines...
-    struct idType : base_type::template Column<idType, QUuid, Sql::PrimaryKey> { SQL_NAME( "id" ) } id;
-    struct shortDescriptionType : base_type::template Column<shortDescriptionType, QString, Null, 128> { SQL_NAME( "short_desc" ) } shortDescription;
-    struct descriptionType : base_type::template Column<descriptionType, QString, Null, 255> { SQL_NAME( "description" ) } description;
+    using is_lookup_table = boost::mpl::true_;
+    using is_restricted = boost::mpl::true_;
+    using base_type = Table<DerivedTable>; // needed for MSVC to compile the follow lines...
+    struct idType : base_type::template Column<idType, QUuid, Sql::PrimaryKey>{ SQL_NAME("id") } id;
+    struct shortDescriptionType
+        : base_type::template Column<shortDescriptionType, QString, Null, 128>{ SQL_NAME(
+              "short_desc") } shortDescription;
+    struct descriptionType : base_type::template Column<descriptionType, QString, Null, 255>{
+        SQL_NAME("description")
+    } description;
     typedef boost::mpl::vector<idType, shortDescriptionType, descriptionType> columns;
-    typedef columns baseColumns;
+    using baseColumns = columns;
 };
 
 /**
@@ -297,22 +329,30 @@ struct LookupTable : Table<DerivedTable>
  * @tparam LeftColumn Column type of the lhs of the mapping.
  * @tparam RightColumn Column type of the rhs of the mapping.
  */
-template<typename DerivedTable, typename LeftColumn, typename RightColumn>
+template <typename DerivedTable, typename LeftColumn, typename RightColumn>
 struct Relation : Table<DerivedTable>
 {
-    typedef boost::mpl::true_ is_relation;
-    typedef Table<DerivedTable> base_type;
+    using is_relation = boost::mpl::true_;
+    using base_type = Table<DerivedTable>;
     struct leftType : base_type::template ForeignKey<leftType, LeftColumn>
     {
-        static QString sqlName() { return QLatin1Literal( "fk_" ) % LeftColumn::table::sqlName() % QLatin1Char('_' ) % LeftColumn::sqlName(); }
+        static QString sqlName()
+        {
+            return QLatin1Literal("fk_") % LeftColumn::table::sqlName() % QLatin1Char('_')
+                % LeftColumn::sqlName();
+        }
     } left;
     struct rightType : base_type::template ForeignKey<rightType, RightColumn>
     {
-        static QString sqlName() { return QLatin1Literal( "fk_" ) % RightColumn::table::sqlName() % QLatin1Char('_' ) % RightColumn::sqlName(); }
+        static QString sqlName()
+        {
+            return QLatin1Literal("fk_") % RightColumn::table::sqlName() % QLatin1Char('_')
+                % RightColumn::sqlName();
+        }
     } right;
 
     typedef boost::mpl::vector<leftType, rightType> columns;
-    typedef columns baseColumns;
+    using baseColumns = columns;
 };
 
 /**
@@ -322,8 +362,9 @@ struct Relation : Table<DerivedTable>
 template <typename DerivedTable, typename LeftColumn, typename RightColumn>
 struct UniqueRelation : Relation<DerivedTable, LeftColumn, RightColumn>
 {
-    typedef Relation<DerivedTable, LeftColumn, RightColumn> base_type; // needed for MSVC to compile the follow lines...
-    typedef boost::mpl::vector< UniqueConstraint< typename base_type::columns > > constraints;
+    typedef Relation<DerivedTable, LeftColumn, RightColumn>
+        base_type; // needed for MSVC to compile the follow lines...
+    using constraints = boost::mpl::vector<UniqueConstraint<typename base_type::columns>>;
 };
 
 /**
@@ -332,22 +373,30 @@ struct UniqueRelation : Relation<DerivedTable, LeftColumn, RightColumn>
  * @tparam DerivedTable CRTP
  * @tparam ColumnT The column this mapping works on.
  */
-template<typename DerivedTable, typename ColumnT>
+template <typename DerivedTable, typename ColumnT>
 struct RecursiveRelation : Table<DerivedTable>
 {
-    typedef boost::mpl::true_ is_relation;
-    typedef Table<DerivedTable> base_type;
+    using is_relation = boost::mpl::true_;
+    using base_type = Table<DerivedTable>;
     struct leftType : base_type::template ForeignKey<leftType, ColumnT>
     {
-        static QString sqlName() { return QLatin1Literal( "fk_" ) % ColumnT::table::sqlName() % QLatin1Char('_') % ColumnT::sqlName(); }
+        static QString sqlName()
+        {
+            return QLatin1Literal("fk_") % ColumnT::table::sqlName() % QLatin1Char('_')
+                % ColumnT::sqlName();
+        }
     } left;
     struct rightType : base_type::template ForeignKey<rightType, ColumnT>
     {
-        static QString sqlName() { return QLatin1Literal( "fk_" ) % ColumnT::table::sqlName() % QLatin1Char('_') % ColumnT::sqlName() % QLatin1Literal("_link"); }
+        static QString sqlName()
+        {
+            return QLatin1Literal("fk_") % ColumnT::table::sqlName() % QLatin1Char('_')
+                % ColumnT::sqlName() % QLatin1Literal("_link");
+        }
     } right;
 
     typedef boost::mpl::vector<leftType, rightType> columns;
-    typedef columns baseColumns;
+    using baseColumns = columns;
 };
 
 /**
@@ -358,10 +407,8 @@ template <typename DerivedTable, typename ColumnT>
 struct UniqueRecursiveRelation : RecursiveRelation<DerivedTable, ColumnT>
 {
     typedef RecursiveRelation<DerivedTable, ColumnT> base_type;
-    typedef boost::mpl::vector< UniqueConstraint< typename base_type::columns > > constraints;
+    using constraints = boost::mpl::vector<UniqueConstraint<typename base_type::columns>>;
 };
-
-
-}
+} // namespace Sql
 
 #endif

@@ -53,8 +53,7 @@ struct DeleteExpr
      * "Copy" ctor.
      */
     template <typename OtherTableT, typename OtherWhereExprT>
-    explicit
-    DeleteExpr( const DeleteExpr<OtherTableT, OtherWhereExprT> &other )
+    explicit DeleteExpr(const DeleteExpr<OtherTableT, OtherWhereExprT> &other)
     {
         whereCondition = other.whereCondition;
     }
@@ -64,9 +63,9 @@ struct DeleteExpr
      * @tparam T The table type to insert into
      */
     template <typename T>
-    DeleteExpr<T, WhereExprT> from( const T& )
+    DeleteExpr<T, WhereExprT> from(const T &)
     {
-        BOOST_MPL_ASSERT(( boost::is_same<TableT, detail::missing> )); // only one from allowed
+        BOOST_MPL_ASSERT((boost::is_same<TableT, detail::missing>)); // only one from allowed
         return DeleteExpr<T, WhereExprT>();
     }
 
@@ -75,11 +74,11 @@ struct DeleteExpr
      * @tparam W The where experession
      */
     template <typename W>
-    DeleteExpr<TableT, typename detail::wrap_condition_leaf<W>::type> where( const W& cond )
+    DeleteExpr<TableT, typename detail::wrap_condition_leaf<W>::type> where(const W &cond)
     {
-        BOOST_MPL_ASSERT(( boost::is_same<WhereExprT, detail::missing> )); // only one where allowed
-        DeleteExpr<TableT, typename detail::wrap_condition_leaf<W>::type> s( *this );
-        detail::assign_condition( s.whereCondition, cond );
+        BOOST_MPL_ASSERT((boost::is_same<WhereExprT, detail::missing>)); // only one where allowed
+        DeleteExpr<TableT, typename detail::wrap_condition_leaf<W>::type> s(*this);
+        detail::assign_condition(s.whereCondition, cond);
         return s;
     }
 
@@ -98,20 +97,15 @@ struct DeleteExpr
     /**
      * Returns a prepared QSqlQuery ready for execution.
      */
-    operator SqlQuery() const
-    {
-        return queryBuilder().query();
-    }
+    operator SqlQuery() const { return queryBuilder().query(); }
 
     /**
      * Returns the pre-filled dynamic query builder.
      * This is useful if intermediate queries have to be stored for extension etc.
-     * Since we don't have support for the auto keyword everywhere yet, that's currently our best option.
+     * Since we don't have support for the auto keyword everywhere yet, that's currently our best
+     * option.
      */
-    operator SqlDeleteQueryBuilder() const
-    {
-        return queryBuilder();
-    }
+    operator SqlDeleteQueryBuilder() const { return queryBuilder(); }
 
     SqlCondition whereCondition;
 };
@@ -123,7 +117,6 @@ DeleteExpr<detail::missing, detail::missing> del()
 {
     return DeleteExpr<detail::missing, detail::missing>();
 }
-
-}
+} // namespace Sql
 
 #endif

@@ -33,25 +33,24 @@ class SQLATE_EXPORT SqlConditionalQueryBuilderBase : public SqlQueryBuilderBase
 {
 public:
     /// Create a new query builder for the given database
-    explicit SqlConditionalQueryBuilderBase( const QSqlDatabase &db = QSqlDatabase::database() );
+    explicit SqlConditionalQueryBuilderBase(const QSqlDatabase &db = QSqlDatabase::database());
 
     /// access to the top-level WHERE condition
-    SqlCondition& whereCondition();
+    SqlCondition &whereCondition();
 
 protected:
     /** Register a bound value, to be replaced after query preparation
      *  @param value The value to bind
      *  @return A unique placeholder to use in the query.
      */
-    QString registerBindValue( const QVariant &value );
+    QString registerBindValue(const QVariant &value);
 
-    QString conditionToString( const SqlCondition &condition );
+    QString conditionToString(const SqlCondition &condition);
 
 protected:
     SqlCondition m_whereCondition;
     QVector<QVariant> m_bindValues;
-    int m_bindedValuesOffset; //holds the parameters offset
-
+    int m_bindedValuesOffset; // holds the parameters offset
 };
 
 #endif

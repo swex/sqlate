@@ -26,18 +26,19 @@
 #include <exception>
 #include <QSqlError>
 
-
-class SQLATE_EXPORT SqlException : public std::exception {
-public:    
-    SqlException(const QSqlError& error) throw() : m_error( error ) {}
+class SQLATE_EXPORT SqlException : public std::exception
+{
+public:
+    SqlException(const QSqlError &error) throw()
+        : m_error(error)
+    {
+    }
     virtual ~SqlException() throw(){};
-    
-    virtual const char* what() const throw() {
-       return m_error.text().toLatin1().constData(); 
-    }   
-    
-    QSqlError error() const {return m_error;}
-    
+
+    virtual const char *what() const throw() { return m_error.text().toLatin1().constData(); }
+
+    QSqlError error() const { return m_error; }
+
 private:
     QSqlError m_error;
 };

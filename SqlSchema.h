@@ -26,9 +26,8 @@
 #include <QUuid>
 #include <QVariant>
 
-Q_DECLARE_METATYPE( QUuid )
-Q_DECLARE_METATYPE( QList<QUuid> )
-
+Q_DECLARE_METATYPE(QUuid)
+Q_DECLARE_METATYPE(QList<QUuid>)
 
 /**
  * @file SqlSchema.h
@@ -36,8 +35,6 @@ Q_DECLARE_METATYPE( QList<QUuid> )
  */
 
 namespace Sql {
-
-
-}
+} // namespace Sql
 
 #endif

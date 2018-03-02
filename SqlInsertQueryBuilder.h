@@ -39,53 +39,54 @@
 class SQLATE_EXPORT SqlInsertQueryBuilder : public SqlQueryBuilderBase
 {
 public:
-
     /// Create a new query builder for the given database
-    explicit SqlInsertQueryBuilder( const QSqlDatabase &db = QSqlDatabase::database() );
+    explicit SqlInsertQueryBuilder(const QSqlDatabase &db = QSqlDatabase::database());
 
     /// INSERT INTO table ( @p columnName , ... ) VALUES( @p value )
-    void addColumnValue( const QString &columnName, const QVariant &value );
+    void addColumnValue(const QString &columnName, const QVariant &value);
 
     /// INSERT INTO table ( @p columnName , ... ) VALUES( DEFAULT )
-    void addColumn( const QString& columnName );
+    void addColumn(const QString &columnName);
 
     template <typename Column>
-    void addColumnValue( const Column &, const typename Column::type &value )
+    void addColumnValue(const Column &, const typename Column::type &value)
     {
-        Sql::warning<boost::is_same<typename Column::type, QDateTime>, UsageOfClientSideTime>::print();
-        addColumnValue( Column::sqlName(), QVariant::fromValue( value ) );
+        Sql::warning<boost::is_same<typename Column::type, QDateTime>,
+                     UsageOfClientSideTime>::print();
+        addColumnValue(Column::sqlName(), QVariant::fromValue(value));
     }
     template <typename Column>
-    void addColumnValue( const Column &, SqlNullType )
+    void addColumnValue(const Column &, SqlNullType)
     {
-        BOOST_MPL_ASSERT(( boost::mpl::not_<typename Column::notNull> ));
-        addColumnValue( Column::sqlName(), QVariant() );
+        BOOST_MPL_ASSERT((boost::mpl::not_<typename Column::notNull>));
+        addColumnValue(Column::sqlName(), QVariant());
     }
     template <typename Column>
-    void addColumnValue( const Column &, SqlNowType now )
+    void addColumnValue(const Column &, SqlNowType now)
     {
-        BOOST_MPL_ASSERT(( boost::is_same<typename Column::type, QDateTime> ));
-        addColumnValue( Column::sqlName(), QVariant::fromValue(now) );
+        BOOST_MPL_ASSERT((boost::is_same<typename Column::type, QDateTime>));
+        addColumnValue(Column::sqlName(), QVariant::fromValue(now));
     }
 
     template <typename Column>
-    void addColumn( const Column & )
+    void addColumn(const Column &)
     {
-        addColumn( Column::sqlName() );
+        addColumn(Column::sqlName());
     }
 
     /// INSERT INTO ... DEFAULT VALUES
     void setToDefaultValues();
 
-    /// Returns the created query object, when called first, the query object is assembled and prepared
-    SqlQuery& query();
+    /// Returns the created query object, when called first, the query object is assembled and
+    /// prepared
+    SqlQuery &query();
 
-private:      
+private:
     friend class InsertQueryBuilderTest;
     friend class InsertTest;
-    
-    QStringList m_columnNames; //holds the column names, used for unit testing
-    QMap<QString, QVariant> m_values; //holds the inserted values, used for unit testing
+
+    QStringList m_columnNames; // holds the column names, used for unit testing
+    QMap<QString, QVariant> m_values; // holds the inserted values, used for unit testing
 };
 
 #endif

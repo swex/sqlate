@@ -23,6 +23,5 @@
 
 namespace Sql {
 
-DEFINE_SCHEMA( POSTGRES_SCHEMA )
-
-}
+DEFINE_SCHEMA(POSTGRES_SCHEMA)
+} // namespace Sql

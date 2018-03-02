@@ -26,27 +26,25 @@ class KDThreadRunnerBase::Private
 {
 public:
     Private()
-        : m_impl( 0 )
+        : m_impl(nullptr)
     {
     }
 
-    QObject* m_impl;
+    QObject *m_impl;
     QSemaphore m_waitStarted;
     QMutex m_startThreadMutex;
 };
 
-KDThreadRunnerBase::KDThreadRunnerBase( QObject * p )
-    : QThread( p )
+KDThreadRunnerBase::KDThreadRunnerBase(QObject *p)
+    : QThread(p)
 {
 }
 
-KDThreadRunnerBase::~KDThreadRunnerBase()
-{
-}
+KDThreadRunnerBase::~KDThreadRunnerBase() {}
 
-void KDThreadRunnerBase::doStart( Priority prio )
+void KDThreadRunnerBase::doStart(Priority prio)
 {
-    start( prio );
+    start(prio);
     d->m_waitStarted.acquire(); // wait for T to be created by run()
 }
 
@@ -58,17 +56,17 @@ void KDThreadRunnerBase::doExec()
     exec();
 }
 
-void KDThreadRunnerBase::setImpl( QObject * i )
+void KDThreadRunnerBase::setImpl(QObject *i)
 {
     d->m_impl = i;
 }
 
-QObject* KDThreadRunnerBase::impl() const
+QObject *KDThreadRunnerBase::impl() const
 {
     return d->m_impl;
 }
 
-QMutex* KDThreadRunnerBase::internalStartThreadMutex()
+QMutex *KDThreadRunnerBase::internalStartThreadMutex()
 {
-    return & d->m_startThreadMutex;
+    return &d->m_startThreadMutex;
 }

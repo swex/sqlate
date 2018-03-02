@@ -36,46 +36,47 @@ class SQLATE_EXPORT SqlUpdateQueryBuilder : public SqlConditionalQueryBuilderBas
 {
 public:
     /// Create a new query builder for the given database
-    explicit SqlUpdateQueryBuilder( const QSqlDatabase &db = QSqlDatabase::database() );
+    explicit SqlUpdateQueryBuilder(const QSqlDatabase &db = QSqlDatabase::database());
 
     /// UPDATE ... SET @p columnName = @p value, ...
-    void addColumnValue( const QString &columnName, const QVariant &value );
+    void addColumnValue(const QString &columnName, const QVariant &value);
 
     template <typename Column>
-    void addColumnValue( const Column &, const typename Column::type &value )
+    void addColumnValue(const Column &, const typename Column::type &value)
     {
-        Sql::warning<boost::is_same<typename Column::type, QDateTime>, UsageOfClientSideTime>::print();
-        addColumnValue( Column::sqlName(), QVariant::fromValue( value ) );
+        Sql::warning<boost::is_same<typename Column::type, QDateTime>,
+                     UsageOfClientSideTime>::print();
+        addColumnValue(Column::sqlName(), QVariant::fromValue(value));
     }
     template <typename Column>
-    void addColumnValue( const Column &, SqlNullType )
+    void addColumnValue(const Column &, SqlNullType)
     {
-        BOOST_MPL_ASSERT(( boost::mpl::not_<typename Column::notNull> ));
-        addColumnValue( Column::sqlName(), QVariant() );
+        BOOST_MPL_ASSERT((boost::mpl::not_<typename Column::notNull>));
+        addColumnValue(Column::sqlName(), QVariant());
     }
     template <typename Column>
-    void addColumnValue( const Column &, SqlNowType now )
+    void addColumnValue(const Column &, SqlNowType now)
     {
-        BOOST_MPL_ASSERT(( boost::is_same<typename Column::type, QDateTime> ));
-        addColumnValue( Column::sqlName(), QVariant::fromValue(now) );
+        BOOST_MPL_ASSERT((boost::is_same<typename Column::type, QDateTime>));
+        addColumnValue(Column::sqlName(), QVariant::fromValue(now));
     }
 
     /**
      * If @p includeSubTables is false, the query will be UPDATE <b>ONLY</b> &lt;tableName&gt;
      * The default is @c true.
      */
-    void setIncludesubTales( bool includeSubTables );
+    void setIncludesubTales(bool includeSubTables);
 
-    /// Returns the created query object, when called first, the query object is assembled and prepared
-    /// The method throws an SqlException if there is an error preparing the query.
-    SqlQuery& query();
+    /// Returns the created query object, when called first, the query object is assembled and
+    /// prepared The method throws an SqlException if there is an error preparing the query.
+    SqlQuery &query();
 
 private:
-    QStringList columnNames() const; //used for testing
+    QStringList columnNames() const; // used for testing
 
 private:
     friend class UpdateQueryBuilderTest;
-    QVector<QPair<QString, QVariant> > m_columns;
+    QVector<QPair<QString, QVariant>> m_columns;
     bool m_includeSubTables;
 };
 

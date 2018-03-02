@@ -8,10 +8,10 @@ class QFileInfo;
  */
 class TestBase : public QObject
 {
-    Q_OBJECT    
+    Q_OBJECT
 
 protected slots:
-    virtual void message(const QString& str);
+    virtual void message(const QString &str);
     void cleanupTestCase();
 
 protected:
@@ -23,9 +23,6 @@ protected:
     bool dropTables();
     bool executePreCreateScripts(const QString &path);
     bool processSqlFile(const QFileInfo &currentFileInfo);
-
-
 };
-
 
 #endif
